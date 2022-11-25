@@ -18,10 +18,10 @@ class QuadrantBatchSpawner(
 
     // MARK: - Overridden methods
 
-    override fun updatePosition(coordinates: Vector2) {
+    override fun spawnAtPosition(coordinates: Vector2) {
         val quadrant = quadrant(coordinates)
         if (!spawnedQuadrants.containsKey(quadrant)) {
-            spawn(quadrant)
+            spawnInQuadrant(quadrant)
         }
     }
 
@@ -41,7 +41,7 @@ class QuadrantBatchSpawner(
         return Vector2(x, y)
     }
 
-    private fun spawn(quadrant: Vector2) {
+    private fun spawnInQuadrant(quadrant: Vector2) {
         val maxSpawnableEntities = floor(fov.area/entity.size.area)
         val entitiesToBeSpawned = floor(maxSpawnableEntities*entity.maxSpawnRate).toInt()
         val maxSpawnX = floor(fov.width - entity.size.width).toInt() - 1
@@ -82,15 +82,14 @@ class QuadrantBatchSpawner(
     }
 
     private fun adjacentQuadrants(quadrant: Vector2): List<Vector2> {
-        return listOf<Vector2>(
-            Vector2(quadrant.x - 1, quadrant.y),
-            Vector2(quadrant.x + 1, quadrant.y),
-            Vector2(quadrant.x - 1, quadrant.y - 1),
-            Vector2(quadrant.x, quadrant.y - 1),
-            Vector2(quadrant.x + 1, quadrant.y - 1),
-            Vector2(quadrant.x - 1, quadrant.y + 1),
-            Vector2(quadrant.x, quadrant.y - 1),
-            Vector2(quadrant.x + 1, quadrant.y - 1)
-        )
+        val partialResult = mutableListOf<Vector2>()
+
+        for (xOffset in -2..2) {
+            for (yOffset in -2..2) {
+                partialResult.add(Vector2(quadrant.x + xOffset, quadrant.y + yOffset))
+            }
+        }
+
+        return partialResult
     }
 }

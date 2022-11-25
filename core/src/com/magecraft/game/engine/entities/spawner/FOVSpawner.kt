@@ -8,6 +8,6 @@ interface FOVSpawner {
     val fov: Size
     val entity: SpawnableEntity
 
-    fun updatePosition(coordinates: Vector2)
+    fun spawnAtPosition(coordinates: Vector2)
     fun entities(coordinates: Vector2): Set<Rectangle>
 }
