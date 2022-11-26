@@ -10,8 +10,8 @@ import com.magecraft.game.engine.entities.spawner.SpawnerPool
 import java.util.Random
 import kotlin.math.floor
 
-class QuadrantBatchSpawner(
-    override val entity: SpawnableEntity,
+class QuadrantBatchSpawner<Entity: SpawnableEntity>(
+    override val entity: Entity,
     override val fov: Size,
     override var pool: SpawnerPool? = null
 ): FOVSpawner {
