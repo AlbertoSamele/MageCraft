@@ -6,12 +6,14 @@ import com.magecraft.game.engine.canvas.Size
 import com.magecraft.game.engine.canvas.intersects
 import com.magecraft.game.engine.entities.spawner.FOVSpawner
 import com.magecraft.game.engine.entities.spawner.SpawnableEntity
+import com.magecraft.game.engine.entities.spawner.SpawnerPool
 import java.util.Random
 import kotlin.math.floor
 
 class QuadrantBatchSpawner(
     override val entity: SpawnableEntity,
-    override val fov: Size
+    override val fov: Size,
+    override var pool: SpawnerPool? = null
 ): FOVSpawner {
     // MARK: - Datasource properties
 
@@ -22,7 +24,7 @@ class QuadrantBatchSpawner(
     override fun spawnAtPosition(coordinates: Vector2) {
         val quadrant = quadrant(coordinates)
         if (!spawnedQuadrants.containsKey(quadrant)) {
-            spawnInQuadrant(quadrant)
+            spawnInQuadrant(quadrant, pool?.entities(coordinates).orEmpty())
         }
     }
 
@@ -42,13 +44,14 @@ class QuadrantBatchSpawner(
         return Vector2(x, y)
     }
 
-    private fun spawnInQuadrant(quadrant: Vector2) {
+    private fun spawnInQuadrant(quadrant: Vector2, inhabitants: Set<Rectangle>) {
         val maxSpawnableEntities = floor(fov.area/entity.size.area)
         val entitiesToBeSpawned = floor(maxSpawnableEntities*entity.maxSpawnRate).toInt()
         val maxSpawnX = floor(fov.width - entity.size.width).toInt() - 1
         val maxSpawnY = floor(fov.height - entity.size.height).toInt() - 1
 
         val spawnedEntities = mutableSetOf<Rectangle>()
+        val conflictingInhabitants = inhabitants.toMutableSet()
         val random = Random()
         for (i in 0 until entitiesToBeSpawned) {
             val spawnX = random.nextInt(maxSpawnX)
@@ -61,8 +64,9 @@ class QuadrantBatchSpawner(
                 entity.size.height
             )
 
-            val canSpawn = !spawnedEntities.any { it.intersects(newEntity) }
+            val canSpawn = !conflictingInhabitants.any { it.intersects(newEntity) }
             if (canSpawn) {
+                conflictingInhabitants.add(newEntity)
                 spawnedEntities.add(newEntity)
             }
         }

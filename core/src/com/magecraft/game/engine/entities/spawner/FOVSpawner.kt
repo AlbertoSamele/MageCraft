@@ -7,6 +7,7 @@ import com.magecraft.game.engine.canvas.Size
 interface FOVSpawner {
     val fov: Size
     val entity: SpawnableEntity
+    var pool: SpawnerPool?
 
     fun spawnAtPosition(coordinates: Vector2)
     fun entities(coordinates: Vector2): Set<Rectangle>
