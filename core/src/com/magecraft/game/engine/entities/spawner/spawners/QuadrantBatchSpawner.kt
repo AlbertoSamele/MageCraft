@@ -3,6 +3,7 @@ package com.magecraft.game.engine.entities.spawner.spawners
 import com.badlogic.gdx.math.Rectangle
 import com.badlogic.gdx.math.Vector2
 import com.magecraft.game.engine.canvas.Size
+import com.magecraft.game.engine.canvas.intersects
 import com.magecraft.game.engine.entities.spawner.FOVSpawner
 import com.magecraft.game.engine.entities.spawner.SpawnableEntity
 import java.util.Random
@@ -48,37 +49,25 @@ class QuadrantBatchSpawner(
         val maxSpawnY = floor(fov.height - entity.size.height).toInt() - 1
 
         val spawnedEntities = mutableSetOf<Rectangle>()
-        var occupiedGridCoordinates = setOf<Vector2>()
         val random = Random()
         for (i in 0 until entitiesToBeSpawned) {
             val spawnX = random.nextInt(maxSpawnX)
             val spawnY = random.nextInt(maxSpawnY)
 
-            val newEntity = Rectangle(spawnX.toFloat(), spawnY.toFloat(), entity.size.width, entity.size.height)
-            val newEntityGridCoordinates = newEntity.toGridCoordinates()
+            val newEntity = Rectangle(
+                spawnX.toFloat() + quadrant.x*fov.width,
+                spawnY.toFloat() + quadrant.y*fov.height,
+                entity.size.width,
+                entity.size.height
+            )
 
-            val canSpawn = !newEntityGridCoordinates.any { it in occupiedGridCoordinates }
+            val canSpawn = !spawnedEntities.any { it.intersects(newEntity) }
             if (canSpawn) {
-                occupiedGridCoordinates = occupiedGridCoordinates + newEntityGridCoordinates
-                newEntity.x += quadrant.x*fov.width
-                newEntity.y += quadrant.y*fov.height
                 spawnedEntities.add(newEntity)
             }
         }
 
         spawnedQuadrants[quadrant] = spawnedEntities
-    }
-
-    private fun Rectangle.toGridCoordinates(): Set<Vector2> {
-        val result = mutableSetOf<Vector2>()
-
-        for (x in x.toInt() until x.toInt() + entity.size.width.toInt()) {
-            for (y in y.toInt() until y.toInt() + entity.size.height.toInt()) {
-                result.add(Vector2(x.toFloat(), y.toFloat()))
-            }
-        }
-
-        return result
     }
 
     private fun adjacentQuadrants(quadrant: Vector2): List<Vector2> {
