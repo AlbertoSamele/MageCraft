@@ -3,7 +3,7 @@ package com.magecraft.game.engine.entities.spawner.spawners
 import com.badlogic.gdx.math.Rectangle
 import com.badlogic.gdx.math.Vector2
 import com.magecraft.game.engine.canvas.Size
-import com.magecraft.game.engine.canvas.intersects
+import com.magecraft.game.engine.utils.intersects
 import com.magecraft.game.engine.entities.spawner.FOVSpawner
 import com.magecraft.game.engine.entities.spawner.SpawnableEntity
 import com.magecraft.game.engine.entities.spawner.SpawnerPool

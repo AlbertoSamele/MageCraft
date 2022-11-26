@@ -1,4 +1,4 @@
-package com.magecraft.game.engine.canvas
+package com.magecraft.game.engine.utils
 
 import com.badlogic.gdx.math.Rectangle
 
